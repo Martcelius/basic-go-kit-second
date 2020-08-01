@@ -60,7 +60,7 @@ func encodeReponse(_ context.Context, w http.ResponseWriter, response interface{
 func NewHandler(ctx context.Context, endpoint Endpoint) http.Handler {
 	r := mux.NewRouter()
 
-	r.Use(commonMiddleware)
+	// r.Use(commonMiddleware)
 
 	r.Methods("POST").Path("/user").Handler(httptransport.NewServer(
 		endpoint.CreateCustomer,
@@ -92,11 +92,4 @@ func NewHandler(ctx context.Context, endpoint Endpoint) http.Handler {
 		encodeReponse,
 	))
 	return r
-}
-
-func commonMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-		next.ServeHTTP(w, r)
-	})
 }

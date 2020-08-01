@@ -14,7 +14,7 @@ var (
 )
 
 // interface for interact repository
-type Repository interface {
+type repository interface {
 	CreateCustomer(ctx context.Context, customer Customer) error
 	GetCustomerById(ctx context.Context, id string) (interface{}, error)
 	GetAllCustomer(ctx context.Context) (interface{}, error)
@@ -23,11 +23,11 @@ type Repository interface {
 }
 
 type Repo struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 func (r *Repo) CreateCustomer(ctx context.Context, customer Customer) error {
-	_, err := r.db.Exec("INSERT INTO CUSTOMER (customerId, email, phone) VALUES (?,?,?)", customer.CustomerId, customer.Email, customer.Phone)
+	_, err := r.Db.Exec("INSERT INTO customers (customerId, email, phone) VALUES (?,?,?)", customer.CustomerId, customer.Email, customer.Phone)
 
 	if err != nil {
 		fmt.Println("Error occured inside CreateCustomer in repo")
@@ -39,7 +39,7 @@ func (r *Repo) CreateCustomer(ctx context.Context, customer Customer) error {
 
 func (r *Repo) GetCustomerById(ctx context.Context, id string) (interface{}, error) {
 	var customer Customer
-	err := r.db.QueryRow("SELECT * FROM CUSTOMER WHERE customerId=?", id).Scan(&customer.CustomerId, &customer.Email, &customer.Phone)
+	err := r.Db.QueryRow("SELECT * FROM customers WHERE customerId=?", id).Scan(&customer.CustomerId, &customer.Email, &customer.Phone)
 
 	if err != nil {
 		fmt.Println("Error occured inside CreateCustomer in repo")
@@ -51,7 +51,7 @@ func (r *Repo) GetCustomerById(ctx context.Context, id string) (interface{}, err
 
 func (r *Repo) GetAllCustomer(ctx context.Context) (interface{}, error) {
 	var customer []Customer
-	rows, err := r.db.Query("SELECT * FROM CUSTOMER")
+	rows, err := r.Db.Query("SELECT customerId, email, phone FROM customers")
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -73,7 +73,7 @@ func (r *Repo) GetAllCustomer(ctx context.Context) (interface{}, error) {
 }
 
 func (r *Repo) UpdateCustomer(ctx context.Context, customer Customer) (string, error) {
-	result, err := r.db.Exec("UPDATE CUSTOMER SET email=?, phone=? WHERE customerId=?", customer.Email, customer.Phone, customer.CustomerId)
+	result, err := r.Db.Exec("UPDATE customers SET email=?, phone=? WHERE customerId=?", customer.Email, customer.Phone, customer.CustomerId)
 
 	if err != nil {
 		return "", nil
@@ -92,7 +92,7 @@ func (r *Repo) UpdateCustomer(ctx context.Context, customer Customer) (string, e
 }
 
 func (r *Repo) DeleteCustomer(ctx context.Context, id string) (string, error) {
-	result, err := r.db.Exec("DELETE FROM CUSTOMER WHERE customerId=?", id)
+	result, err := r.Db.Exec("DELETE FROM customers WHERE customerId=?", id)
 
 	if err != nil {
 		return "", err

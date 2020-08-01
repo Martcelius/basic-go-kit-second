@@ -20,7 +20,7 @@ type Service interface {
 }
 
 type AccountService struct {
-	repository Repo
+	Repository Repo
 }
 
 //Implementation interface AccountService
@@ -31,7 +31,7 @@ func (s AccountService) CreateCustomer(ctx context.Context, customer Customer) (
 		Email:      customer.Email,
 		Phone:      customer.Phone,
 	}
-	err := s.repository.CreateCustomer(ctx, customerDetail)
+	err := s.Repository.CreateCustomer(ctx, customerDetail)
 	if err != nil {
 		fmt.Println("error", err)
 		return "", err
@@ -41,7 +41,7 @@ func (s AccountService) CreateCustomer(ctx context.Context, customer Customer) (
 }
 
 func (s AccountService) GetCustomerById(ctx context.Context, id string) (interface{}, error) {
-	customer, err := s.repository.GetCustomerById(ctx, id)
+	customer, err := s.Repository.GetCustomerById(ctx, id)
 
 	if err != nil {
 		fmt.Println("error", err)
@@ -53,7 +53,7 @@ func (s AccountService) GetCustomerById(ctx context.Context, id string) (interfa
 }
 
 func (s AccountService) GetAllCustomer(ctx context.Context) (interface{}, error) {
-	customer, err := s.repository.GetAllCustomer(ctx)
+	customer, err := s.Repository.GetAllCustomer(ctx)
 
 	if err != nil {
 		fmt.Println("error", err)
@@ -70,7 +70,7 @@ func (s AccountService) UpdateCustomer(ctx context.Context, customer Customer) (
 		Email:      customer.Email,
 		Phone:      customer.Phone,
 	}
-	msg, err := s.repository.UpdateCustomer(ctx, customerUpdate)
+	msg, err := s.Repository.UpdateCustomer(ctx, customerUpdate)
 	if err != nil {
 		fmt.Println("error", err)
 		return "", err
@@ -80,7 +80,7 @@ func (s AccountService) UpdateCustomer(ctx context.Context, customer Customer) (
 }
 
 func (s AccountService) DeleteCustomer(ctx context.Context, id string) (string, error) {
-	msg, err := s.repository.DeleteCustomer(ctx, id)
+	msg, err := s.Repository.DeleteCustomer(ctx, id)
 
 	if err != nil {
 		fmt.Println("error", err)
