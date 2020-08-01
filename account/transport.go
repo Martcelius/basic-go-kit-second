@@ -48,12 +48,12 @@ func decodeUpdateCustomer(_ context.Context, r *http.Request) (interface{}, erro
 func decodeDeleteCustomer(_ context.Context, r *http.Request) (interface{}, error) {
 	id := mux.Vars(r)["id"]
 
-	req := DeleteCustomerRequest{Id: id}
+	req := DeleteCustomerRequest{ID: id}
 	return req, nil
 }
 
-func encodeReponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	w.Header().Set("Content-Type", "application/json")
+func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	return json.NewEncoder(w).Encode(response)
 }
 
@@ -65,31 +65,31 @@ func NewHandler(ctx context.Context, endpoint Endpoint) http.Handler {
 	r.Methods("POST").Path("/user").Handler(httptransport.NewServer(
 		endpoint.CreateCustomer,
 		decodeCreateCustomerRequest,
-		encodeReponse,
+		encodeResponse,
 	))
 
 	r.Methods("GET").Path("/user/{id}").Handler(httptransport.NewServer(
 		endpoint.GetCustomerById,
 		decodeGetCustomerById,
-		encodeReponse,
+		encodeResponse,
 	))
 
 	r.Methods("GET").Path("/user").Handler(httptransport.NewServer(
 		endpoint.GetAllCustomer,
 		decodeGetAllCustomer,
-		encodeReponse,
+		encodeResponse,
 	))
 
 	r.Methods("PUT").Path("/user").Handler(httptransport.NewServer(
 		endpoint.UpdateCustomer,
 		decodeUpdateCustomer,
-		encodeReponse,
+		encodeResponse,
 	))
 
 	r.Methods("DELETE").Path("/user/{id}").Handler(httptransport.NewServer(
 		endpoint.DeleteCustomer,
 		decodeDeleteCustomer,
-		encodeReponse,
+		encodeResponse,
 	))
 	return r
 }

@@ -6,9 +6,9 @@ import (
 )
 
 type Customer struct {
-	CustomerId string `json: "customerId"`
-	Email      string `json: "email"`
-	Phone      string `json: "email"`
+	CustomerId string `json:"customerid"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
 }
 
 type Service interface {

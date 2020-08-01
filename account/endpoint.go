@@ -13,33 +13,33 @@ type CreateCustomerRequest struct {
 }
 
 type CreateCustomerResponse struct {
-	Msg string `json: "msg"`
-	Err error  `jsong: "err, omitempty"`
+	Msg string `json:"msg"`
+	Err error  `jsong:"err,omitempty"`
 }
 
 type GetCustomerByIdRequest struct {
-	Id string `json: "customerId"`
+	Id string `json:"customerId"`
 }
 
 type GetCustomerByIdResponse struct {
-	Customer interface{} `json: "customer, omitempty"`
-	Err      string      `json: "err, omitempty"`
+	Customer interface{} `json:"customer,omitempty"`
+	Err      string      `json:"err,omitempty"`
 }
 
 type GetAllCustomerRequest struct{}
 
 type GetAllCustomerResponse struct {
-	Customer interface{} `json: "customer, omitempty"`
-	Err      string      `json: err, omitempty`
+	Customer interface{} `json:"customer,omitempty"`
+	Err      string      `json:"err,omitempty"`
 }
 
 type DeleteCustomerRequest struct {
-	Id string `json: customerId`
+	ID string `json:"customerId"`
 }
 
 type DeleteCustomerResponse struct {
-	Msg string `json: "msg"`
-	Err error  `json: "err, omitempty"`
+	Msg string `json:"msg"`
+	Err error  `json:"err,omitempty"`
 }
 
 type UpdateCustomerRequest struct {
@@ -89,12 +89,12 @@ func MakeGetCustomerByIdEndpoint(s Service) endpoint.Endpoint {
 
 func MakeGetAllCustomerEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		customer, err := s.GetAllCustomer(ctx)
+		customerDetail, err := s.GetAllCustomer(ctx)
 
 		if err != nil {
-			return GetAllCustomerResponse{customer, "Data Not Found"}, nil
+			return GetAllCustomerResponse{Customer: customerDetail, Err: "Data Not Found"}, nil
 		}
-		return GetAllCustomerResponse{customer, ""}, nil
+		return GetAllCustomerResponse{Customer: customerDetail, Err: ""}, nil
 	}
 }
 
@@ -114,7 +114,7 @@ func MakeUpdateCustomerEndpoint(s Service) endpoint.Endpoint {
 func MakeDeleteCustomerEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(DeleteCustomerRequest)
-		msg, err := s.DeleteCustomer(ctx, req.Id)
+		msg, err := s.DeleteCustomer(ctx, req.ID)
 
 		if err != nil {
 			return DeleteCustomerResponse{"Error update", err}, nil
