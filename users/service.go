@@ -12,11 +12,12 @@ type users struct {
 	Lastname  string `json:"lastname"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
+	Token     string `json:"token"`
 }
 
 type Service interface {
 	Register(ctx context.Context, u users) (interface{}, error)
-	// Login(ctx context.Context, user interface{}) (interface{}, error)
+	Login(ctx context.Context, u users) (users, error)
 }
 
 type UserService struct {
@@ -44,4 +45,25 @@ func (user UserService) Register(ctx context.Context, u users) (interface{}, err
 		return users{}, err
 	}
 	return userRegister, nil
+}
+
+func (user UserService) Login(ctx context.Context, u users) (users, error) {
+	userLogin := users{
+		Email:    u.Email,
+		Password: u.Password,
+	}
+
+	_, err := validationEmail.Parse(userLogin.Email)
+
+	if err != nil {
+		return u, err
+	}
+
+	result, err := user.RepoUser.Login(ctx, userLogin)
+
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }

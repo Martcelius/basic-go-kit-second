@@ -37,6 +37,7 @@ func main() {
 
 	endpointUser := users.Endpoint{
 		Register: users.MakeRegisterEndpoint(srvUsers),
+		Login:    users.MakeLoginEndpoint(srvUsers),
 	}
 
 	log.Println("basic go kit is listening on port:", *httpAddr)
