@@ -1,6 +1,7 @@
 package account
 
 import (
+	"basic-go-kit-second/router"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -57,10 +58,8 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 	return json.NewEncoder(w).Encode(response)
 }
 
-func NewHandler(ctx context.Context, endpoint Endpoint) http.Handler {
-	r := mux.NewRouter()
-
-	// r.Use(commonMiddleware)
+func NewHandlerAccount(ctx context.Context, endpoint Endpoint) {
+	r := router.R
 
 	r.Methods("POST").Path("/user").Handler(httptransport.NewServer(
 		endpoint.CreateCustomer,
@@ -91,5 +90,4 @@ func NewHandler(ctx context.Context, endpoint Endpoint) http.Handler {
 		decodeDeleteCustomer,
 		encodeResponse,
 	))
-	return r
 }

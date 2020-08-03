@@ -2,51 +2,48 @@ package main
 
 import (
 	"basic-go-kit-second/account"
+	"basic-go-kit-second/router"
+	"basic-go-kit-second/users"
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
 	db := GetDBconn()
-
+	router.InitRouter()
+	defer db.Close()
 	var (
 		httpAddr = flag.String("http", ":8000", "http listen address")
 	)
-	rep := account.Repo{db}
+
+	repoAccount := account.Repo{Db: db}
+	repoUser := users.UserRepo{Db: db}
+
 	flag.Parse()
 	ctx := context.Background()
 
-	srv := account.AccountService{Repository: rep}
-	errChan := make(chan error)
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		errChan <- fmt.Errorf("%s", <-c)
-	}()
+	srvAccount := account.AccountService{Repository: repoAccount}
+	srvUsers := users.UserService{RepoUser: repoUser}
 
-	endpoint := account.Endpoint{
-		CreateCustomer:  account.MakeCreateCustomerEndpoint(srv),
-		GetCustomerById: account.MakeGetCustomerByIdEndpoint(srv),
-		GetAllCustomer:  account.MakeGetAllCustomerEndpoint(srv),
-		UpdateCustomer:  account.MakeUpdateCustomerEndpoint(srv),
-		DeleteCustomer:  account.MakeDeleteCustomerEndpoint(srv),
+	endpointAccount := account.Endpoint{
+		CreateCustomer:  account.MakeCreateCustomerEndpoint(srvAccount),
+		GetCustomerById: account.MakeGetCustomerByIdEndpoint(srvAccount),
+		GetAllCustomer:  account.MakeGetAllCustomerEndpoint(srvAccount),
+		UpdateCustomer:  account.MakeUpdateCustomerEndpoint(srvAccount),
+		DeleteCustomer:  account.MakeDeleteCustomerEndpoint(srvAccount),
 	}
 
-	go func() {
-		log.Println("basic go kit is listening on port:", *httpAddr)
-		handler := account.NewHandler(ctx, endpoint)
-		err := http.ListenAndServe(*httpAddr, handler)
-		if err != nil {
-			panic(err)
-		}
-	}()
+	endpointUser := users.Endpoint{
+		Register: users.MakeRegisterEndpoint(srvUsers),
+	}
 
-	log.Fatalln(<-errChan)
-
+	log.Println("basic go kit is listening on port:", *httpAddr)
+	account.NewHandlerAccount(ctx, endpointAccount)
+	users.NewHandlerUser(ctx, endpointUser)
+	err := http.ListenAndServe(*httpAddr, router.R)
+	if err != nil {
+		panic(err)
+	}
 }
